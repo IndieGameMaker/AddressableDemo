@@ -10,13 +10,22 @@ public class LoadSceneManager : MonoBehaviour
 {
     [SerializeField] private string sceneName = "Level01";
 
-    private async void Start()
+    public async void DownloadAndLoadAsync()
     {
-        
+        await CheckDownloadSize();
+        await Task.Delay(2000);
+        await LoadSceneAsync();
+    }
+    
+    // 캐시 클리어
+    public void ClearCache()
+    {
+        Addressables.ClearDependencyCacheAsync(sceneName);
+        Debug.Log("캐시 삭제");
     }
     
     // 다운로드 사이즈 체크
-    private async Task CheckDownloadSize()
+    public async Task CheckDownloadSize()
     {
         // 파일 사이즈 체크
         AsyncOperationHandle<long> handle = Addressables.GetDownloadSizeAsync(sceneName);
@@ -31,7 +40,7 @@ public class LoadSceneManager : MonoBehaviour
         Addressables.Release(handle);
     }
 
-    private async Task LoadSceneAsync()
+    public async Task LoadSceneAsync()
     {
         try
         {
