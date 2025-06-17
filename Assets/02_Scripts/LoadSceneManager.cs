@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,6 +27,27 @@ public class LoadSceneManager : MonoBehaviour
             long size = handle.Result / (1024*1024); // MB 변환
             Debug.Log($"다운로드 사이즈 {size} MB");
         }
-    }
         
+        Addressables.Release(handle);
+    }
+
+    private async Task LoadSceneAsync()
+    {
+        try
+        {
+            var loadHandle = Addressables.LoadSceneAsync(sceneName);
+            while (!loadHandle.IsDone)
+            {
+                Debug.Log($"Progress : {loadHandle.PercentComplete * 100} % ");
+                await Task.Yield();
+            }
+
+            Debug.Log($"Status : {loadHandle.Status}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log(e.Message);
+        }
+    }
+    
 }
